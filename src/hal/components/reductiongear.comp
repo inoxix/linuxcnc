@@ -1,0 +1,42 @@
+component reductiongear """Schaublin  reduction gear box as used in models 102 and 125. Ether there is a 1:1 ratio or a reduction of 6.5:1.""";
+
+pin in bit select_low "Low gear is selected";
+pin in float speed_in "Speed command input";
+pin out float speed_out "Speed command to DAC/PWM";
+pin out bit indicator_to_high "Indicating that the high gear should be selected";
+pin out bit indicator_to_low "Indicating that the low gear should be selected";
+param rw float to_low_threshold = 0 "Speed indication to switch to low gear";
+param rw float to_high_threshold = 100000 "Speed indication to switch to low gear";
+param rw float reduction_ratio = 6.5 "Factor how much the RPM is reduced";
+
+function _;
+
+license "GPL";
+author "inoxix";
+;;
+
+FUNCTION(_) {
+    // Scale the speed output accorting th selected gear
+    if (select_low) {
+    	// X:1 gear
+    	speed_out = speed_in * reduction_ratio;  	
+    } else  {
+    	// 1:1 gear
+    	speed_out = speed_in;
+    }
+
+    // Set the indicators for switching gears
+    if (select_low) {
+    	if (speed_in > to_high_threshold) {
+    		indicator_to_high = true;
+    	} else {
+    		indicator_to_high = false;
+    	}
+    } else {
+    	if (speed_in < to_low_threshold) {
+    		indicator_to_low = true;
+    	} else {
+    		indicator_to_low = false;
+    	}
+    }
+}
