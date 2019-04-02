@@ -1,0 +1,20 @@
+setexact_for_test_suite_only
+
+loadrt streamer cfg=bb depth=350
+loadrt sampler cfg=bbb depth=350
+loadrt andor
+loadrt threads name1=fast period1=1000000
+
+addf streamer.0 fast
+addf andor.0 fast
+addf sampler.0 fast
+
+net in0 streamer.0.pin.0 andor.0.in0
+net in1 streamer.0.pin.1 andor.0.in1
+net in2 streamer.0.pin.2 andor.0.in2
+
+net out andor.0.out sampler.0.pin.0
+
+loadusr -w sh runstreamer
+start
+loadusr -w halsampler -n 8

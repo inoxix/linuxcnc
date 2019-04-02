@@ -42,3 +42,6 @@ oprofile*
 position.txt
 *.9
 *.glade.h
+.project
+-settings
+
