@@ -3,20 +3,24 @@ component schaublin125 """Custom component for the Schaublin 125 CNC.
 
 description """To be written""";
 
-// Reduction Gear HAL
+// Input Pins, Gear Box Function
 pin   in  bit select_low  "";
-pin   in  u32 speed-in  "Unscaled speed signal input.";
-pin   out u32 speed-out "Scaled speed signal output according  mechanincal reduction gear.";
+pin   in  float speed-in  "Unscaled speed signal input.";
 
-param rw  float ratio = 6.5 "Transmission ratio of speed reduction.";
+// Output Pins, Gear Box Function
+pin   out float speed-out "Scaled speed signal output according  mechanincal reduction gear.";
 
-// Tool Turret HAL Interface
+// Parameters, Gear Box Function
+param rw  float gear-ratio = 6.5 "Transmission ratio of speed reduction.";
+
+// Control Pins, Tool Turret
 pin   in  bit tool-prepare "Indicates a tool prepare is requested. Usually from iocontrol.0.tool-prepare.";
 pin   out bit tool-prepared "Acknowledes a tool prepare is completed. Usually to iocontrol.0.tool-prepared.";
 pin   in  s32 tool-number "The requested tool number.";
 pin   in  bit tool-change "Start a tool change.";
 pin   out bit tool-changed "Tool change is completed.";
-// Tool Turrert I/O
+
+// I/O Pins, Tool Turret
 pin   out bit active "Shows that the tool turret is active.";
 pin   out bit rotate "Signal to drive the turret.";
 pin   in  bit pos1 "Turret is in tool position 1.";
@@ -24,21 +28,23 @@ pin   in  bit pos2 "Turret is in tool position 2.";
 pin   in  bit pos3 "Turret is in tool position 3.";
 pin   in  bit pos4 "Turret is in tool position 4.";
 
-//option count_function;
+// Global vaiables
 
+
+// Miscellaneous
 license "GPL";
 author "thomas burkhard";
 
 function _;
 
 ;;
-#include <rtapi_math.h>
 
 FUNCTION(_){
-	// Part for reduction gear
-	speed_out = speed_in * 2;	
-	
-	
-	
+	// Part for gear scaling
+    if (select_low == 0) {
+    	speed_out = speed_in;
+    } else {
+    	speed_out = speed_in * gear_ratio;
+    }
 	
 }
