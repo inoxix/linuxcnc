@@ -1,0 +1,25 @@
+setexact_for_test_suite_only
+
+loadrt threads name1=fast period1=100000000  # 100ms
+
+loadrt streamer depth=256 cfg=bf
+loadrt sampler depth=256 cfg=bffbb
+loadrt reductiongear
+
+net gearlow  streamer.0.pin.0 => reductiongear.0.select-low sampler.0.pin.0
+net speedin  streamer.0.pin.1 => reductiongear.0.speed-in sampler.0.pin.1
+net speedout reductiongear.0.speed-out => sampler.0.pin.2
+net indhigh  reductiongear.0.indicator-to-high => sampler.0.pin.3
+net indlow  reductiongear.0.indicator-to-low => sampler.0.pin.4
+
+# Order matters!
+addf streamer.0 fast
+addf reductiongear.0 fast
+addf sampler.0 fast
+
+setp reductiongear.0.to-high-threshold 600   # If in low gear indicate at 600 RP to change gear
+setp reductiongear.0.to-low-threshold 200    # If in high gear indicate att 200 RPM to change gear
+
+loadusr -w sh runstreamer
+start
+loadusr -w halsampler -n 16
